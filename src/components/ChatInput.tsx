@@ -9,7 +9,7 @@ interface ChatInputProps {
 
 /**
  * ChatInput Component
- * Handles user input and message sending
+ * THEME MATCHED: Dark Glass styling with Indigo accents
  */
 const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled, loading, activeDocument }) => {
     const [message, setMessage] = useState('');
@@ -59,14 +59,21 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled, loading, active
     ];
 
     return (
-        <div className="border-t border-gray-100 bg-white p-4">
+        <div className="border-t border-white/10 bg-slate-900/95 backdrop-blur-md p-4 pb-6">
+
+            {/* Quick Actions Bar */}
             {!disabled && !loading && (
-                <div className="flex gap-2 mb-4 overflow-x-auto pb-1 scrollbar-hide">
+                <div className="flex gap-2 mb-4 overflow-x-auto pb-2 scrollbar-hide">
                     {quickActions.map((action) => (
                         <button
                             key={action.label}
                             onClick={() => onSend(action.prompt)}
-                            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg shadow-sm hover:bg-purple-50 hover:border-purple-200 hover:text-purple-700 transition-all whitespace-nowrap"
+                            className="
+                flex items-center gap-2 px-3 py-1.5 text-xs font-medium 
+                text-slate-400 bg-white/5 border border-white/10 rounded-full 
+                shadow-sm transition-all duration-200 whitespace-nowrap
+                hover:bg-indigo-500/20 hover:border-indigo-500/30 hover:text-indigo-200 hover:shadow-indigo-500/10
+              "
                         >
                             {action.icon}
                             {action.label}
@@ -74,22 +81,49 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled, loading, active
                     ))}
                 </div>
             )}
-            <div className="flex gap-2">
-                <textarea
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    placeholder={disabled ? 'Please upload a document first...' : 'Type your question...'}
-                    disabled={disabled || loading}
-                    rows={2}
-                    className="flex-1 resize-none rounded-lg border border-gray-300 px-4 py-2 focus:border-purple-500 focus:outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
-                />
+
+            {/* Input Area */}
+            <div className="flex gap-3 items-end relative">
+                <div className="relative flex-1">
+                    <textarea
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleKeyPress} // React uses onKeyDown for modern event handling
+                        placeholder={disabled ? 'Please upload a document first...' : 'Ask a question about your document...'}
+                        disabled={disabled || loading}
+                        rows={1}
+                        style={{ minHeight: '44px', maxHeight: '120px' }} // Auto-growing feel constraints
+                        className="
+                w-full resize-none rounded-2xl border border-white/10 px-4 py-3 
+                bg-slate-950 text-white placeholder-slate-500 shadow-inner
+                focus:border-indigo-500/50 focus:bg-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none 
+                disabled:bg-slate-900 disabled:text-slate-600 disabled:cursor-not-allowed
+                transition-all duration-200
+            "
+                    />
+                </div>
+
                 <button
                     onClick={handleSend}
                     disabled={disabled || loading || !message.trim()}
-                    className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors font-medium"
+                    className={`
+            h-11 px-5 rounded-xl font-medium flex items-center justify-center transition-all duration-200
+            ${disabled || loading || !message.trim()
+                            ? 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                            : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:scale-105 active:scale-95'
+                        }
+          `}
                 >
-                    {loading ? 'Sending...' : 'Send'}
+                    {loading ? (
+                        <svg className="animate-spin h-5 w-5 text-white/50" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    ) : (
+                        <svg className="w-5 h-5 transform rotate-90" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                    )}
                 </button>
             </div>
         </div>

@@ -8,7 +8,7 @@ interface FileUploaderProps {
 
 /**
  * FileUploader Component
- * Handles PDF file upload to the RAG workflow
+ * THEME MATCHED: Dark Glass styling for both Landing and Sidebar variants
  */
 const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 'sidebar' }) => {
     const [uploading, setUploading] = useState(false);
@@ -18,13 +18,11 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 
         const file = e.target.files?.[0];
         if (!file) return;
 
-        // Reset error
         setError(null);
 
-        // Validate file type
         if (file.type !== 'application/pdf') {
             setError('Only PDF files are supported');
-            e.target.value = ''; // Reset input
+            e.target.value = '';
             return;
         }
 
@@ -33,7 +31,7 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 
         try {
             await uploadFile(file);
             onUploadSuccess(file.name);
-            e.target.value = ''; // Reset input for next upload
+            e.target.value = '';
         } catch (err) {
             setError(err instanceof Error ? err.message : 'Failed to upload file');
         } finally {
@@ -41,36 +39,42 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 
         }
     };
 
+    // -------------------------------------------------------------------------
+    // VARIANT: LANDING PAGE (Large, Glassy, Centered)
+    // -------------------------------------------------------------------------
     if (variant === 'landing') {
         return (
             <div className="w-full max-w-xl mx-auto">
                 <div className="mb-4">
                     <label
                         htmlFor="file-upload-landing"
-                        className={`flex flex-col items-center justify-center w-full h-48 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${uploading
-                            ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                            : 'border-purple-300 hover:border-purple-500 hover:bg-purple-50 hover:shadow-md'
-                            }`}
+                        className={`
+                            flex flex-col items-center justify-center w-full h-52 
+                            border-2 border-dashed rounded-2xl cursor-pointer transition-all duration-300 group
+                            ${uploading
+                                ? 'border-white/10 bg-black/20 cursor-not-allowed opacity-50'
+                                : 'border-white/20 bg-white/5 hover:border-indigo-400/50 hover:bg-white/10 hover:shadow-[0_0_25px_rgba(99,102,241,0.15)]'
+                            }
+                        `}
                     >
                         <div className="text-center p-6">
-                            <svg
-                                className={`mx-auto h-12 w-12 mb-3 ${uploading ? 'text-gray-400' : 'text-purple-500'}`}
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={1.5}
-                                    d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                                />
-                            </svg>
-                            <p className="text-lg font-medium text-gray-700">
-                                {uploading ? 'Uploading...' : 'Upload Document'}
+                            {uploading ? (
+                                <svg className="animate-spin h-10 w-10 text-indigo-400 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                            ) : (
+                                <div className="bg-indigo-500/20 p-3 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform duration-300">
+                                    <svg className="h-8 w-8 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                                    </svg>
+                                </div>
+                            )}
+
+                            <p className="text-lg font-medium text-white group-hover:text-indigo-100 transition-colors">
+                                {uploading ? 'Processing PDF...' : 'Upload Document'}
                             </p>
-                            <p className="text-sm text-gray-500 mt-2">Drag & drop or click to browse</p>
-                            <p className="text-xs text-gray-400 mt-1">Supported PDF only</p>
+                            <p className="text-sm text-slate-400 mt-2">Drag & drop or click to browse</p>
                         </div>
                         <input
                             id="file-upload-landing"
@@ -83,47 +87,47 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 
                     </label>
                 </div>
 
-                {/* Error Message */}
                 {error && (
-                    <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-center">
-                        <p className="text-sm text-red-600">{error}</p>
+                    <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-center backdrop-blur-sm">
+                        <p className="text-sm text-red-200 font-medium">{error}</p>
                     </div>
                 )}
             </div>
         )
     }
 
+    // -------------------------------------------------------------------------
+    // VARIANT: SIDEBAR (Compact, Dark Slate)
+    // -------------------------------------------------------------------------
     return (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold mb-4 text-gray-900">Document Upload</h2>
-
+        <div className="w-full">
             {/* Upload Button */}
-            <div className="mb-4">
+            <div className="mb-0">
                 <label
                     htmlFor="file-upload"
-                    className={`flex items-center justify-center w-full px-4 py-3 border-2 border-dashed rounded-lg cursor-pointer transition-colors ${uploading
-                        ? 'border-gray-300 bg-gray-50 cursor-not-allowed'
-                        : 'border-blue-300 hover:border-blue-500 hover:bg-blue-50'
-                        }`}
+                    className={`
+                        flex flex-col items-center justify-center w-full px-4 py-6 
+                        border border-dashed rounded-xl cursor-pointer transition-all duration-200
+                        ${uploading
+                            ? 'border-white/5 bg-slate-900/50 cursor-not-allowed'
+                            : 'border-white/10 bg-white/5 hover:bg-indigo-500/10 hover:border-indigo-500/30'
+                        }
+                    `}
                 >
                     <div className="text-center">
-                        <svg
-                            className="mx-auto h-8 w-8 text-gray-400 mb-2"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                            />
-                        </svg>
-                        <p className="text-sm text-gray-600">
+                        {uploading ? (
+                            <svg className="animate-spin h-6 w-6 text-indigo-400 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                        ) : (
+                            <svg className="mx-auto h-8 w-8 text-slate-400 mb-2 transition-colors hover:text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                            </svg>
+                        )}
+                        <p className="text-xs font-medium text-slate-300">
                             {uploading ? 'Uploading...' : 'Click to upload PDF'}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">PDF files only</p>
                     </div>
                     <input
                         id="file-upload"
@@ -136,10 +140,10 @@ const FileUploader: React.FC<FileUploaderProps> = ({ onUploadSuccess, variant = 
                 </label>
             </div>
 
-            {/* Error Message */}
+            {/* Error Message - Sidebar Style */}
             {error && (
-                <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg">
-                    <p className="text-sm text-red-600">{error}</p>
+                <div className="mt-3 p-2 bg-red-500/10 border border-red-500/20 rounded-lg">
+                    <p className="text-xs text-red-300 text-center">{error}</p>
                 </div>
             )}
         </div>

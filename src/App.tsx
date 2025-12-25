@@ -9,7 +9,7 @@ import type { Document } from './types';
 
 /**
  * Main App Component
- * NotebookLLM-style interface with left panel (file upload) and right panel (chat)
+ * THEME MATCHED: Dark/Glass Landing Page AND Dark Main Interface
  */
 function App() {
   const [documents, setDocuments] = useState<Document[]>([]);
@@ -38,8 +38,6 @@ function App() {
 
     setDocuments((prev) => [...prev, newDoc]);
     setActiveDocumentId(newDocId);
-
-    // Close sidebar on mobile after upload
     setIsSidebarOpen(false);
   };
 
@@ -49,13 +47,8 @@ function App() {
   const handleSendMessage = async (message: string) => {
     if (!activeDocumentId) return;
 
-    // Add user message to chat
-    const userMessage: ChatMessage = {
-      role: 'user',
-      content: message,
-    };
+    const userMessage: ChatMessage = { role: 'user', content: message };
 
-    // Optimistically update UI
     setDocuments((prev) =>
       prev.map((doc) =>
         doc.id === activeDocumentId
@@ -67,14 +60,8 @@ function App() {
     setLoading(true);
 
     try {
-      // Send message to webhook
       const answer = await sendChatMessage(message);
-
-      // Add assistant response to chat
-      const assistantMessage: ChatMessage = {
-        role: 'assistant',
-        content: answer,
-      };
+      const assistantMessage: ChatMessage = { role: 'assistant', content: answer };
 
       setDocuments((prev) =>
         prev.map((doc) =>
@@ -84,7 +71,6 @@ function App() {
         )
       );
     } catch (error) {
-      // Add error message to chat
       const errorMessage: ChatMessage = {
         role: 'assistant',
         content: error instanceof Error ? error.message : 'An error occurred. Please try again.',
@@ -102,47 +88,79 @@ function App() {
     }
   };
 
-  // Empty State / Landing Page
+  // ---------------------------------------------------------------------------
+  // STATE 1: Landing Page (Glassmorphism Style)
+  // ---------------------------------------------------------------------------
   if (documents.length === 0) {
     return (
-      <div className="flex h-screen bg-gray-50 items-center justify-center p-4">
-        <div className="w-full max-w-2xl flex flex-col items-center">
-          <div className="flex items-center gap-3 mb-8">
-            <img
-              src="/ThinkDeepLogo.png"
-              alt="ThinkDeep Logo"
-              className="w-10 h-10 rounded-md shadow-sm"
-            />
-            <span className="text-xl font-bold text-gray-900">ThinkDeep</span>
+      <div className="flex min-h-screen items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 relative overflow-hidden">
+
+        {/* Decorative Background Blobs for Glass Effect */}
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/30 rounded-full blur-3xl" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/30 rounded-full blur-3xl" />
+
+        <div className="w-full max-w-xl flex flex-col items-center relative z-10">
+
+          {/* Logo Section */}
+          <div className="flex items-center gap-3 mb-10 animate-fade-in-down">
+            <div className="p-2 bg-white/10 rounded-xl backdrop-blur-sm border border-white/10 shadow-lg">
+              <img
+                src="/ThinkDeepLogo.png"
+                alt="ThinkDeep Logo"
+                className="w-10 h-10 rounded-md"
+              />
+            </div>
+            <span className="text-3xl font-bold text-white tracking-tight drop-shadow-md">
+              ThinkDeep
+            </span>
           </div>
 
-          <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center tracking-tight">
-            What would you like to explore?
-          </h1>
-          <p className="text-lg text-gray-600 mb-12 text-center max-w-md">
-            Upload a document to start asking questions, summarize content, and analyze key insights.
-          </p>
+          {/* Glass Card Container */}
+          <div className="w-full bg-white/10 backdrop-blur-xl border border-white/20 shadow-2xl rounded-3xl p-8 md:p-12 text-center transition-transform duration-300 hover:scale-[1.01]">
+            <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 tracking-tight">
+              Unlock insights from your docs
+            </h1>
+            <p className="text-lg text-blue-100/80 mb-10 max-w-sm mx-auto leading-relaxed">
+              Upload a PDF to start asking questions, summarizing content, and analyzing key insights instantly.
+            </p>
 
-          <FileUploader onUploadSuccess={handleUploadSuccess} variant="landing" />
+            <div className="relative group">
+              <div className="absolute -inset-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-lg blur opacity-25 group-hover:opacity-50 transition duration-200"></div>
+              <div className="relative bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:bg-white/10 transition-colors">
+                <FileUploader
+                  onUploadSuccess={handleUploadSuccess}
+                  variant="landing"
+                />
+              </div>
+            </div>
+          </div>
+
+          <p className="mt-8 text-sm text-white/40 font-medium">
+            Powered by RAG ThinkDeep 1.0
+          </p>
         </div>
       </div>
     );
   }
 
+  // ---------------------------------------------------------------------------
+  // STATE 2: Main App (Sidebar + Chat) - UPDATED TO DARK MODE
+  // ---------------------------------------------------------------------------
   return (
-    <div className="flex h-screen bg-gray-50 relative">
+    // Changed bg-gray-50 to bg-slate-950
+    <div className="flex h-screen bg-slate-950 relative overflow-hidden">
 
-      {/* Mobile Header */}
-      <div className="md:hidden absolute top-0 left-0 right-0 z-20 bg-white border-b border-gray-100 p-4 flex items-center gap-3">
+      {/* Mobile Header (Dark Glass) */}
+      <div className="md:hidden absolute top-0 left-0 right-0 z-20 bg-slate-900/90 backdrop-blur-md border-b border-white/10 p-4 flex items-center gap-3">
         <button
           onClick={() => setIsSidebarOpen(true)}
-          className="p-2 -ml-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+          className="p-2 -ml-2 text-slate-300 hover:bg-white/10 rounded-lg transition-colors"
         >
           <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <span className="font-semibold text-gray-900">ThinkDeep</span>
+        <span className="font-semibold text-white">ThinkDeep</span>
       </div>
 
       <Sidebar
@@ -154,11 +172,19 @@ function App() {
         onClose={() => setIsSidebarOpen(false)}
       />
 
-      {/* Right Panel - Chat Interface */}
-      <div className="flex-1 flex flex-col bg-white overflow-hidden shadow-xl m-0 md:m-2 rounded-none md:rounded-2xl border-0 md:border border-gray-100 mt-16 md:mt-0 pt-0">
-        <div className="border-b border-gray-100 p-4 bg-white/80 backdrop-blur-sm flex justify-between items-center z-10">
-          <h2 className="text-lg font-semibold text-gray-900 truncate pr-4">
-            {activeDocument ? activeDocument.name : 'Chat'}
+      {/* Right Panel - Chat Interface Wrapper */}
+      {/* Changed bg-white to bg-slate-950 and border colors */}
+      <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden shadow-2xl m-0 md:m-3 md:rounded-2xl border-0 md:border border-white/10 mt-16 md:mt-0 pt-0 relative z-10">
+
+        {/* Chat Header */}
+        <div className="border-b border-white/10 p-4 bg-slate-900/50 backdrop-blur-sm flex justify-between items-center z-10 sticky top-0">
+          <h2 className="text-lg font-semibold text-white truncate pr-4 flex items-center gap-2">
+            {activeDocument ? (
+              <>
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"></span>
+                {activeDocument.name}
+              </>
+            ) : 'Chat'}
           </h2>
         </div>
 
@@ -173,11 +199,14 @@ function App() {
             />
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center bg-gray-50 text-gray-400 flex-col gap-4">
-            <svg className="w-16 h-16 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-            </svg>
-            <p>Select or upload a document to start chatting</p>
+          <div className="flex-1 flex items-center justify-center bg-slate-950 text-slate-500 flex-col gap-4">
+            {/* Empty Chat State */}
+            <div className="p-6 bg-white/5 rounded-full shadow-inner border border-white/5">
+              <svg className="w-12 h-12 opacity-50 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </div>
+            <p>Select a document from the sidebar</p>
           </div>
         )}
       </div>
