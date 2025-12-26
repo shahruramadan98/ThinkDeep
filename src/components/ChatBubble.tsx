@@ -1,64 +1,72 @@
-import React, { useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import type { ChatMessage } from '../api/webhook';
+import React, { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
+import type { ChatMessage } from '../api/webhook'
 
 interface ChatBubbleProps {
-    message: ChatMessage;
+    message: ChatMessage
 }
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
-    const isUser = message.role === 'user';
-    const [copied, setCopied] = useState(false);
+    const isUser = message.role === 'user'
+    const [copied, setCopied] = useState(false)
 
     const handleCopy = async () => {
-        await navigator.clipboard.writeText(message.content);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 1500);
-    };
+        await navigator.clipboard.writeText(message.content)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1500)
+    }
 
     return (
         <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-6 group`}>
             <div className={`max-w-[85%] md:max-w-[75%] flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
 
-                {/* Bubble Container */}
                 <div
                     className={`
-                        rounded-2xl px-5 py-3.5 shadow-sm relative overflow-hidden text-sm leading-relaxed
-                        ${isUser
-                            ? 'bg-gradient-to-br from-indigo-600 to-purple-600 text-white rounded-tr-none shadow-indigo-500/20' // User: Gradient
-                            : 'bg-slate-800/80 backdrop-blur-sm border border-white/10 text-slate-100 rounded-tl-none' // AI: Dark Glass
+            relative rounded-2xl px-5 py-3.5 text-sm leading-relaxed overflow-hidden
+            backdrop-blur-xl shadow-lg
+            ${isUser
+                            ? 'bg-gradient-to-br from-sky-400/90 via-indigo-400/90 to-purple-400/90 text-white rounded-tr-none shadow-sky-300/30'
+                            : 'bg-white/60 text-slate-800 rounded-tl-none shadow-slate-400/20'
                         }
-                    `}
+          `}
                 >
-                    {isUser ? (
-                        <p className="whitespace-pre-wrap font-medium">
-                            {message.content}
-                        </p>
-                    ) : (
-                        /* 'prose-invert' is CRITICAL here. 
-                           It tells TailwindTypography to style text for Dark Mode (white text). 
-                        */
-                        <div className="prose prose-invert prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-slate-900/50 prose-pre:border prose-pre:border-white/10">
-                            <ReactMarkdown>
+                    <div
+                        className={`
+              pointer-events-none absolute inset-0
+              ${isUser
+                                ? 'bg-gradient-to-br from-white/25 via-transparent to-black/10'
+                                : 'bg-gradient-to-br from-white/40 via-white/10 to-transparent'
+                            }
+            `}
+                    />
+
+                    <div className="relative z-10">
+                        {isUser ? (
+                            <p className="whitespace-pre-wrap font-medium">
                                 {message.content}
-                            </ReactMarkdown>
-                        </div>
-                    )}
+                            </p>
+                        ) : (
+                            <div className="prose prose-sm max-w-none prose-p:leading-relaxed prose-pre:bg-white/70 prose-pre:border prose-pre:border-slate-200/60 prose-pre:backdrop-blur">
+                                <ReactMarkdown>
+                                    {message.content}
+                                </ReactMarkdown>
+                            </div>
+                        )}
+                    </div>
                 </div>
 
-                {/* Tools Row (Copy, etc.) - Only shows on hover to keep UI clean */}
                 {!isUser && (
                     <div className="mt-2 pl-1 flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                         <button
                             onClick={handleCopy}
                             className={`
-                                flex items-center gap-1.5 text-xs font-medium transition-all rounded-md px-2 py-1 border border-transparent
-                                ${copied
-                                    ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'
-                                    : 'text-slate-500 hover:text-indigo-300 hover:bg-white/5 hover:border-white/5'
+                flex items-center gap-1.5 text-xs font-medium rounded-md px-2 py-1 transition-all
+                backdrop-blur-md
+                ${copied
+                                    ? 'text-emerald-700 bg-emerald-200/70'
+                                    : 'text-slate-400 bg-white/40 hover:bg-white/70 hover:text-slate-600'
                                 }
-                            `}
-                            title={copied ? 'Copied!' : 'Copy to clipboard'}
+              `}
                         >
                             {copied ? (
                                 <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +83,7 @@ const ChatBubble: React.FC<ChatBubbleProps> = ({ message }) => {
                 )}
             </div>
         </div>
-    );
-};
+    )
+}
 
-export default ChatBubble;
+export default ChatBubble
